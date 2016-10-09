@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CloudCompatLib</string>
+    <string name="common_mi_network_disabled">网络状况异常，请仔细检查网络。</string>
+</resources>
