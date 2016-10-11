@@ -9,17 +9,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.lzy.demo.utils.AnimHelper;
+import com.bright.cloudcompatlib.utils.AnimHelper;
 
-/**
- * ================================================
- * 作    者：jeasonlzy（廖子尧）Github地址：https://github.com/jeasonlzy0216
- * 版    本：1.0
- * 创建日期：16/8/17
- * 描    述：
- * 修订历史：
- * ================================================
- */
 @SuppressWarnings("unused")
 public class TranslateUpDownBehavior extends FloatingActionButton.Behavior {
 
