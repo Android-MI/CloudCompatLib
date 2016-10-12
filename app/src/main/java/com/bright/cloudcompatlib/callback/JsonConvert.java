@@ -52,7 +52,7 @@ public class JsonConvert<T> implements Converter<T> {
         if (rawType == LzyResponse.class) {
             LzyResponse lzyResponse = Convert.fromJson(jsonReader, type);
             int code = lzyResponse.code;
-            if (code == 0) {
+            if (code == 200) {
                 //noinspection unchecked
                 return (T) lzyResponse;
             } else if (code == 104) {
@@ -68,7 +68,7 @@ public class JsonConvert<T> implements Converter<T> {
                 //比如：其他乱七八糟的等，在此实现相应的逻辑，弹出对话或者跳转到其他页面等,该抛出错误，会在onError中回调。
                 throw new IllegalStateException("其他乱七八糟的等");
             } else {
-                throw new IllegalStateException("错误代码：" + code + "，错误信息：" + lzyResponse.msg);
+                throw new IllegalStateException("错误代码：" + code + "，错误信息：" + lzyResponse.message);
             }
         }
         throw new IllegalStateException("基类错误无法解析!");
