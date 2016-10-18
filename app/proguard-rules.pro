@@ -140,8 +140,16 @@
 -keep public class com.android.vending.licensing.ILicensingService
 -keep public class * extends android.support.**
 -keep public class * extends android.app.Fragment
+-keep public class * extends android.support.v4.app.Fragment   #如果有引用v4包可以添加下面这行
 -dontwarn android.support.**
 -keep class android.support.** {*;}
+
+#-keep public class com.bright.cloudcompatlib.** { *; }
+#-dontwarn com.bright.cloudcompatlib.**
+
+#-keepclasseswithmembernames class * {
+#    native <methods>;
+#}
 
 #自定义控件不要混淆
 -keep public class * extends android.view.View {*;}
