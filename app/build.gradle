@@ -17,7 +17,10 @@ android {
         }
     }
 }
-
+/**
+ * project->build.gradle需要添加
+ *  allprojects {*  repositories {*   jcenter()
+ *   maven { url "https://jitpack.io" }}} **/
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:24.2.1'
