@@ -5,7 +5,7 @@ package com.bright.cloudcompatlib.base;
  *
  * @author tci_mi
  * @ClassName GlobalConstant
- * @Description 全局常量类
+ * 全局常量类
  */
 public class GlobalConstant {
 

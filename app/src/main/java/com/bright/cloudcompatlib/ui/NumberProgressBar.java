@@ -13,7 +13,6 @@ import android.view.View;
 
 import com.bright.cloudcompatlib.R;
 
-
 /**
  * Created by daimajia on 14-4-30.
  */

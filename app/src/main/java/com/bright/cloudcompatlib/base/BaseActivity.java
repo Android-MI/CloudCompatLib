@@ -34,24 +34,46 @@ import com.bright.cloudcompatlib.R;
 import com.bright.cloudcompatlib.core.SystemBarTintManager;
 
 import butterknife.ButterKnife;
+import me.drakeet.materialdialog.MaterialDialog;
 
 /**
- * Created by tci_mi on 16/10/8.
+ * Created by tci_mi on 16/10/8 上午11:34.
  */
-
 public abstract class BaseActivity extends AppCompatActivity {
 
     public boolean isLandscape = false;
+    public OnMDialogClickListener mOnMdialogPositiveClickListener = null;
     protected BaseActivity mBaseActivity = null;
     protected BaseApplication mApplication = null;
-
     protected boolean mIsCancelAction = false;
     protected boolean mIsLogoutAction = false;
-
     Toast mToast = null;
+    // ****** MD 风格对话框 ******//
+    MaterialDialog mMaterialDialog;
     private long waitTime = 2000;
+
+    //**** rx ****//
+
+    //    private CompositeSubscription mCompositeSubscription;
     private long touchTime = 0;
     private ProgressDialog dialog;
+
+    /**
+     * 解决Subscription内存泄露问题
+     */
+//    protected void addSubscription(Subscription s) {
+//        if (this.mCompositeSubscription == null) {
+//            this.mCompositeSubscription = new CompositeSubscription();
+//        }
+//        this.mCompositeSubscription.add(s);
+//    }
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        if (this.mCompositeSubscription != null) {
+//            this.mCompositeSubscription.unsubscribe();
+//        }
+//    }
 
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
@@ -60,6 +82,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         mApplication = (BaseApplication) this.getApplication();
         mApplication.add(this);
         mBaseActivity = this;
+        ButterKnife.bind(this);
 
         initSystemBarTint();
         SupportDisplay.initLayoutSetParams(BaseActivity.this);
@@ -88,22 +111,19 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onPause();
     }
 
-    /**
-     * 子类Activity必须实现的方法，用于初始化控件，重新适配等操作
-     */
     protected abstract void resetLayout();
 
     @Override
     public void setContentView(View view, ViewGroup.LayoutParams params) {
         super.setContentView(view, params);
-        ButterKnife.bind(this);
+        ButterKnife.bind(this, view);
         resetLayout();
     }
 
     @Override
     public void setContentView(View view) {
         super.setContentView(view);
-        ButterKnife.bind(this);
+        ButterKnife.bind(this, view);
         resetLayout();
     }
 
@@ -243,6 +263,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         getWindow().setAttributes(lp);
     }
 
+    // ************　ToolBar 相关　start *************** //
+
     /**
      * 拨打电话号码
      *
@@ -269,9 +291,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         }, null, true);
 
-    }
 
-    // ************　ToolBar 相关　start *************** //
+    }
 
     /**
      * 公用提示框
@@ -348,6 +369,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         return typedValue.data;
     }
+    // ************　ToolBar相关　end *************** //
 
     /**
      * 获取深主题色
@@ -366,7 +388,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(homeAsUpEnabled);
     }
-    // ************　ToolBar相关　end *************** //
 
     public void initToolBar(Toolbar toolbar, boolean homeAsUpEnabled, int resTitle) {
         initToolBar(toolbar, homeAsUpEnabled, getString(resTitle));
@@ -427,6 +448,66 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    public void showMDDialog(String title, String message) {
+        mMaterialDialog = new MaterialDialog(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("确认", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+                    }
+                })
+                .setNegativeButton("取消", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+                    }
+                });
+
+        mMaterialDialog.show();
+
+    }
+
+    public void showMDDialog(String title, String message, final OnMDialogClickListener onMDialogPositiveClickListener) {
+        mMaterialDialog = new MaterialDialog(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("确认", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+                        if (onMDialogPositiveClickListener != null) {
+                            onMDialogPositiveClickListener.onPositiveClick(v);
+                        }
+                    }
+                })
+                .setNegativeButton("取消", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+
+                        if (onMDialogPositiveClickListener != null) {
+                            onMDialogPositiveClickListener.onNegativeClick(v);
+                        }
+                    }
+                });
+
+        mMaterialDialog.show();
+    }
+
+    public void setmOnMdialogPositiveClickListener(OnMDialogClickListener mOnMdialogPositiveClickListener) {
+        this.mOnMdialogPositiveClickListener = mOnMdialogPositiveClickListener;
+    }
+
+
+    public interface OnMDialogClickListener {
+
+        void onPositiveClick(View v);
+
+        void onNegativeClick(View v);
+    }
+
     /**
      * 添加弹出的popWin关闭的事件，主要是为了将背景透明度改回来
      */
@@ -437,5 +518,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             backgroundAlpha(1f);
         }
     }
+
     // ************　对话框相关　end *************** //
 }

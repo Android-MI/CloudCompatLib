@@ -1,6 +1,5 @@
 package com.bright.cloudcompatlib.base;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -16,18 +15,18 @@ import com.lzy.okgo.cookie.store.PersistentCookieStore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * 全局应用程序类
  *
  * @author CollCloud_小米
- * @ClassName AppApplacation
+ * @ClassName BaseApplication
  */
 public class BaseApplication extends Application {
 
     private static BaseApplication mInstance = null;
     private List<BaseActivity> mActivityList = null;
-    private List<Activity> mDefinedActivityList = null;
 
     public static BaseApplication getInstance() {
 
@@ -44,7 +43,7 @@ public class BaseApplication extends Application {
 
     public void add(BaseActivity baseActivity) {
         if (mActivityList == null) {
-            mActivityList = new ArrayList<BaseActivity>();
+            mActivityList = new ArrayList<>();
         }
         mActivityList.add(baseActivity);
     }
@@ -65,31 +64,7 @@ public class BaseApplication extends Application {
         mActivityList.clear();
     }
 
-    public void addDefinedActivity(Activity activity) {
-        if (mDefinedActivityList == null) {
-            mDefinedActivityList = new ArrayList<Activity>();
-        }
-        mDefinedActivityList.add(activity);
-    }
-
-    public synchronized void unRegisterActivity(Activity activity) {
-
-        if (mDefinedActivityList.size() != 0) {
-            mDefinedActivityList.remove(activity);
-            if (!activity.isFinishing()) {
-                activity.finish();
-            }
-        }
-    }
-
-    public void finishDefinedActivity() {
-        for (int i = 0; i < mDefinedActivityList.size(); i++) {
-            mDefinedActivityList.get(i).finish();
-        }
-        mDefinedActivityList.clear();
-    }
-
-    public List<BaseActivity> getmActivityList() {
+    public List<BaseActivity> getActivityList() {
         return mActivityList;
     }
 
@@ -116,19 +91,24 @@ public class BaseApplication extends Application {
             //以下都不是必须的，根据需要自行选择,一般来说只需要 debug,缓存相关,cookie相关的 就可以了
             OkGo.getInstance()
 
-                    //打开该调试开关,控制台会使用 红色error 级别打印log,并不是错误,是为了显眼,不需要就不要加入该行
-                    .debug("OkGo")
+                    // 打开该调试开关,打印级别INFO,并不是异常,是为了显眼,不需要就不要加入该行
+                    // 最后的true表示是否打印okgo的内部异常，一般打开方便调试错误
+                    .debug("OkGo", Level.INFO, true)
 
                     //如果使用默认的 60秒,以下三行也不需要传 OkGo.DEFAULT_MILLISECONDS
                     .setConnectTimeout(10000)  //全局的连接超时时间
                     .setReadTimeOut(10000)     //全局的读取超时时间
                     .setWriteTimeOut(10000)    //全局的写入超时时间
 
-                    //可以全局统一设置缓存模式,默认是不使用缓存,可以不传,具体其他模式看 github 介绍 https://github.com/jeasonlzy0216/
+                    //可以全局统一设置缓存模式,默认是不使用缓存,可以不传,具体其他模式看
+                    // github 介绍 https://github.com/jeasonlzy0216/
                     .setCacheMode(CacheMode.NO_CACHE)
 
                     //可以全局统一设置缓存时间,默认永不过期,具体使用方法看 github 介绍
                     .setCacheTime(CacheEntity.CACHE_NEVER_EXPIRE)
+                    //可以全局统一设置超时重连次数,默认为三次,那么最差的情况会请求4次(一次原始请求,三次重连请求),
+                    // 不需要可以设置为0
+                    .setRetryCount(3)
 
                     //如果不想让框架管理cookie,以下不需要
 //                .setCookieStore(new MemoryCookieStore())                //cookie使用内存缓存（app退出后，cookie消失）
@@ -165,8 +145,6 @@ public class BaseApplication extends Application {
 
     /**
      * 检测网络是否可用
-     *
-     * @return
      */
     public boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -176,8 +154,6 @@ public class BaseApplication extends Application {
 
     /**
      * 获取App安装包信息
-     *
-     * @return
      */
     public PackageInfo getPackageInfo() {
         PackageInfo info = null;

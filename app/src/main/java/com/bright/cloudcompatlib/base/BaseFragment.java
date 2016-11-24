@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import butterknife.ButterKnife;
+
 /**
  * 若把初始化内容放到initData实现,就是采用Lazy方式加载的Fragment
  * 若不需要Lazy加载则initData方法内留空,初始化内容放到initViews即可
@@ -75,6 +77,7 @@ public abstract class BaseFragment extends android.support.v4.app.Fragment {
         this.inflater = inflater;
         isFirstLoad = true;
         View view = initView(inflater, container, savedInstanceState);
+        ButterKnife.bind(mBaseActivity, view);
         isPrepared = true;
         lazyLoad();
         return view;
@@ -121,8 +124,6 @@ public abstract class BaseFragment extends android.support.v4.app.Fragment {
 
     /**
      * 检查网络状态
-     *
-     * @Name: isNetworkConnected
      */
     public boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getActivity()
@@ -131,8 +132,14 @@ public abstract class BaseFragment extends android.support.v4.app.Fragment {
         return ni != null && ni.isConnectedOrConnecting();
     }
 
+    /**
+     * 若不需要Lazy加载则initData方法内留空,初始化内容放到initViews即可
+     */
     protected abstract View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
 
+    /**
+     * 若把初始化内容放到initData实现,就是采用Lazy方式加载的Fragment
+     */
     protected abstract void initData();
 
     public String getTitle() {
