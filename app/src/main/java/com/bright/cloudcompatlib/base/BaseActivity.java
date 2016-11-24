@@ -116,14 +116,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public void setContentView(View view, ViewGroup.LayoutParams params) {
         super.setContentView(view, params);
-        ButterKnife.bind(this, view);
+        ButterKnife.bind(this);
         resetLayout();
     }
 
     @Override
     public void setContentView(View view) {
         super.setContentView(view);
-        ButterKnife.bind(this, view);
+        ButterKnife.bind(this);
         resetLayout();
     }
 

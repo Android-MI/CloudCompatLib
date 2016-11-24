@@ -1,8 +1,12 @@
 apply plugin: 'com.android.library'
 
+def buildSdkVersion = 24
+def buildToolVersion = "24.0.3"
+def supportVersion = "24.2.1"
+
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion buildSdkVersion
+    buildToolsVersion buildToolVersion
 
     defaultConfig {
         minSdkVersion 14
@@ -23,11 +27,11 @@ android {
  *   maven { url "https://jitpack.io" }}} **/
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:support-annotations:24.2.1'
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support:recyclerview-v7:24.2.1'
-    compile 'com.android.support:cardview-v7:24.2.1'
+    compile 'com.android.support:appcompat-v7:' + supportVersion
+    compile 'com.android.support:support-annotations:' + supportVersion
+    compile 'com.android.support:design:' + supportVersion
+    compile 'com.android.support:recyclerview-v7:' + supportVersion
+    compile 'com.android.support:cardview-v7:' + supportVersion
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:v2.2.0'
 
     compile 'me.drakeet.materialdialog:library:1.3.1'
