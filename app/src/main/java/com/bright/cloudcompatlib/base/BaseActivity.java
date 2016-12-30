@@ -42,13 +42,13 @@ import me.drakeet.materialdialog.MaterialDialog;
 public abstract class BaseActivity extends AppCompatActivity {
 
     public boolean isLandscape = false;
+    // ****** MD 风格对话框 ******//
     public OnMDialogClickListener mOnMdialogPositiveClickListener = null;
     protected BaseActivity mBaseActivity = null;
     protected BaseApplication mApplication = null;
     protected boolean mIsCancelAction = false;
     protected boolean mIsLogoutAction = false;
     Toast mToast = null;
-    // ****** MD 风格对话框 ******//
     MaterialDialog mMaterialDialog;
     private long waitTime = 2000;
 
@@ -74,7 +74,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 //            this.mCompositeSubscription.unsubscribe();
 //        }
 //    }
-
     @Override
     protected void onCreate(@NonNull Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,15 +99,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         isLandscape = this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
         SupportDisplay.initLayoutSetParams(BaseActivity.this);
         super.onResume();
-        if (mApplication != null && !mApplication.isNetworkConnected()) {
-            Toast.makeText(BaseActivity.this, R.string.common_mi_network_disabled, Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
     }
 
     protected abstract void resetLayout();
@@ -263,8 +253,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         getWindow().setAttributes(lp);
     }
 
-    // ************　ToolBar 相关　start *************** //
-
     /**
      * 拨打电话号码
      *
@@ -315,6 +303,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         });
     }
 
+    // ************　ToolBar 相关　start *************** //
     /**
      * 子类可以重写改变状态栏颜色
      */
@@ -369,7 +358,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         return typedValue.data;
     }
-    // ************　ToolBar相关　end *************** //
 
     /**
      * 获取深主题色
@@ -392,6 +380,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void initToolBar(Toolbar toolbar, boolean homeAsUpEnabled, int resTitle) {
         initToolBar(toolbar, homeAsUpEnabled, getString(resTitle));
     }
+    // ************　ToolBar相关　end *************** //
 
     // ************　对话框相关　start *************** //
     private android.support.v7.app.AlertDialog showDialog(Context context, String title, String message, View contentView,
@@ -438,7 +427,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.setMessage("请求网络中...");
+        dialog.setMessage("加载中...");
         dialog.show();
     }
 

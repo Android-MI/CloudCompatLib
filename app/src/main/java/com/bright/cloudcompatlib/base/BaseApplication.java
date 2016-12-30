@@ -12,16 +12,21 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheEntity;
 import com.lzy.okgo.cache.CacheMode;
 import com.lzy.okgo.cookie.store.PersistentCookieStore;
+import com.lzy.okgo.model.HttpHeaders;
+import com.lzy.okgo.model.HttpParams;
 
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.X509TrustManager;
+
 /**
  * 全局应用程序类
- *
- * @author CollCloud_小米
- * @ClassName BaseApplication
  */
 public class BaseApplication extends Application {
 
@@ -73,13 +78,13 @@ public class BaseApplication extends Application {
         super.onCreate();
         mInstance = this;
 
-        //---------这里给出的是示例代码,告诉你可以这么传,实际使用的时候,根据需要传,不需要就不传-------------//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.put("commonHeaderKey1", "commonHeaderValue1");    //header不支持中文
-//        headers.put("commonHeaderKey2", "commonHeaderValue2");
-//        HttpParams params = new HttpParams();
-//        params.put("commonParamsKey1", "commonParamsValue1");     //param支持中文,直接传,不要自己编码
-//        params.put("commonParamsKey2", "这里支持中文参数");
+        //---------这里给出的是示例代码,实际使用的时候,根据需要传,不需要就不传-------------//
+        HttpHeaders headers = new HttpHeaders();
+        headers.put("commonHeaderKey1", "commonHeaderValue1");    //header不支持中文，不允许有特殊字符
+        headers.put("commonHeaderKey2", "commonHeaderValue2");
+        HttpParams params = new HttpParams();
+        params.put("commonParamsKey1", "commonParamsValue1");     //param支持中文,直接传,不要自己编码
+        params.put("commonParamsKey2", "支持中文参数");
         //-----------------------------------------------------------------------------------//
 
         //必须调用初始化
@@ -112,14 +117,14 @@ public class BaseApplication extends Application {
 
                     //如果不想让框架管理cookie,以下不需要
 //                .setCookieStore(new MemoryCookieStore())                //cookie使用内存缓存（app退出后，cookie消失）
-                    .setCookieStore(new PersistentCookieStore());          //cookie持久化存储，如果cookie不过期，则一直有效
+                    .setCookieStore(new PersistentCookieStore())          //cookie持久化存储，如果cookie不过期，则一直有效
 
-            //可以设置https的证书,以下几种方案根据需要自己设置
+                    //可以设置https的证书,以下几种方案根据需要自己设置
 //                    .setCertificates()                                  //方法一：信任所有证书（选一种即可）
 //                    .setCertificates(getAssets().open("srca.cer"))      //方法二：也可以自己设置https证书（选一种即可）
 //                    .setCertificates(getAssets().open("aaaa.bks"), "123456", getAssets().open("srca.cer"))//方法三：传入bks证书,密码,和cer证书,支持双向加密
 
-            //可以添加全局拦截器,不会用的千万不要传,错误写法直接导致任何回调不执行
+                    //可以添加全局拦截器,不会用的千万不要传,错误写法直接导致任何回调不执行
 //                .addInterceptor(new Interceptor() {
 //                    @Override
 //                    public Response intercept(Chain chain) throws IOException {
@@ -127,9 +132,9 @@ public class BaseApplication extends Application {
 //                    }
 //                })
 
-            //这两行同上,不需要就不要传
-//                    .addCommonHeaders(headers)                                         //设置全局公共头
-//                    .addCommonParams(params);                                          //设置全局公共参数
+                    //这两行同上,不需要就不要传
+                    .addCommonHeaders(headers)                                         //设置全局公共头
+                    .addCommonParams(params);                                          //设置全局公共参数
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -165,6 +170,44 @@ public class BaseApplication extends Application {
         if (info == null)
             info = new PackageInfo();
         return info;
+    }
+
+
+    /**
+     * 根据项目需要修改,此为示例
+     */
+    private class SafeTrustManager implements X509TrustManager {
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+            try {
+                for (X509Certificate certificate : chain) {
+                    certificate.checkValidity(); //检查证书是否过期，签名是否通过等
+                }
+            } catch (Exception e) {
+                throw new CertificateException(e);
+            }
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[0];
+        }
+    }
+
+    /**
+     * 根据项目需要修改,此为示例
+     */
+    private class SafeHostnameVerifier implements HostnameVerifier {
+        @Override
+        public boolean verify(String hostname, SSLSession session) {
+            //验证主机名是否匹配
+//            return hostname.equals("server.example.com");
+            return true;
+        }
     }
 
 }

@@ -90,7 +90,9 @@ public class SupportDisplay {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             display.getSize(outSize);
         } else {
+            //noinspection deprecation
             outSize.x = display.getWidth();
+            //noinspection deprecation
             outSize.y = display.getHeight();
         }
     }
