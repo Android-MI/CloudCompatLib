@@ -1,2 +1,2 @@
 # CloudCompatLib
-personal-use lib for Android . 
+personal-use.
