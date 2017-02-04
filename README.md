@@ -1,0 +1,2 @@
+# CloudCompatLib
+personal-use.
